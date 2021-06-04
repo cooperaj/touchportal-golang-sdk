@@ -36,14 +36,20 @@ func main() {
 	p.Settings(&settings{})
 
 	// registers our plugin with TouchPortal. Blocks until the plugin is ready for use
-	p.Register()
+	err := p.Register()
+	if err != nil {
+		fmt.Printf("Failed to register plugin with TouchPortal. %s", err)
+	}
 
 	// add an action handler for our "gsdk_increment_counter" action
 	p.OnAction(func(event client.ActionMessage) {
 		fmt.Printf("Received action: %#v\n", event)
 
 		counter++
-		p.UpdateState("gsdk_counter", fmt.Sprint(counter))
+		err := p.UpdateState("gsdk_counter", fmt.Sprint(counter))
+		if err != nil {
+			fmt.Printf("Failed to update state \"gsdk_counter\" with TouchPortal. %s", err)
+		}
 	}, "gsdk_increment_counter")
 
 	// if you want an easy way to wait around for the plugin to exit plugin.Done() offers
